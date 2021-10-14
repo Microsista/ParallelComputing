@@ -49,7 +49,6 @@ int main() {
 			ThrowIfFailed(cudaFree(outputOnDevice));
 		};
 
-		ThrowIfFailed(cudaSetDevice(1));
 		allocateInputAndOutputOnDevice();
 		copyInputToDevice();
 		executeSumKernel();
