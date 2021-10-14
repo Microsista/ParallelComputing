@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CudaCompile Include="Program.cu" />
+    <CudaCompile Include="Sum.cu">
+      <Filter>Kernels</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Add.cu">
+      <Filter>Kernels</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{69a3e946-6035-4b74-8dcf-60ca377e91bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kernels">
+      <UniqueIdentifier>{820881d2-ada6-4350-b558-42d73621b616}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Utilities.cuh">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="CudaException.cuh">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Sum.cuh">
+      <Filter>Kernels</Filter>
+    </ClInclude>
+    <ClInclude Include="Globals.cuh">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Add.cuh">
+      <Filter>Kernels</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
