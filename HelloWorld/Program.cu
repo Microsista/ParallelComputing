@@ -27,16 +27,15 @@ int main() {
 			exit(1);
 		}
 		printf("Loaded image with a width of %dpx, a height of %dpx and %d channels\n", width, height, channels);
-
 	
 
 		void* inputOnDevice;
 		void* outputOnDevice;
 
-		auto inputSizeInBytes = width * height * channels;
+		auto inputSizeInBytes = width * height * sizeof(Uchar3);
 		auto numberOfGroups = (inputSizeInBytes + numberOfThreads - 1) / numberOfThreads;
 
-		unsigned char* output = new unsigned char[inputSizeInBytes];
+		Uchar3* output = new Uchar3[inputSizeInBytes];
 
 		auto allocateInputAndOutputOnDevice = [&] {
 			ThrowIfFailed(cudaMalloc(&inputOnDevice, inputSizeInBytes));
