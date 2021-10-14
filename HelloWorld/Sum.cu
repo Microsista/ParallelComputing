@@ -10,13 +10,13 @@ __global__ void sum(int* input, int* output, int workSize) {
 	if (globalIndex < workSize) {
 		auto loadToShared = [&] {
 			auto actual = [&] {
-				shared[localIndex] = input[globalIndex];
+				shared[localIndex] = input[globalIndex + threadIdx.x * 3];
 			};
 
 			auto halo = [&] {
 				if (threadIdx.x < blurRadius) {
-					shared[localIndex - blurRadius] = globalIndex >= blurRadius ? input[globalIndex - blurRadius] : 0;
-					shared[localIndex + numberOfThreads] = globalIndex < (workSize - numberOfThreads) ? input[globalIndex + numberOfThreads] : 0;
+					shared[localIndex - blurRadius] = globalIndex + threadIdx.x * 3 >= blurRadius * 3 ? input[globalIndex + threadIdx.x * 3 - blurRadius * 3] : 0;
+					shared[localIndex + numberOfThreads] = globalIndex + threadIdx.x * 3 < (workSize - numberOfThreads * 3) ? input[globalIndex * threadIdx.x * 3 + numberOfThreads * 3] : 0;
 				}
 			};
 
@@ -34,6 +34,6 @@ __global__ void sum(int* input, int* output, int workSize) {
 		};
 		
 		loadToShared();
-		output[globalIndex] = sumNeighbouringValues();
+		output[globalIndex] = sumNeighbouringValues() / (2 * blurRadius + 1);
 	}
 }

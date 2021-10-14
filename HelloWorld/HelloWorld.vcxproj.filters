@@ -8,6 +8,9 @@
     <CudaCompile Include="Add.cu">
       <Filter>Kernels</Filter>
     </CudaCompile>
+    <CudaCompile Include="sum2d.cu">
+      <Filter>Kernels</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -15,6 +18,12 @@
     </Filter>
     <Filter Include="Kernels">
       <UniqueIdentifier>{820881d2-ada6-4350-b558-42d73621b616}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{5aba260d-c162-4719-9aa1-fe5ecd038f8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{bd4456d7-04b6-42a5-aec8-73005785ddca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -33,5 +42,16 @@
     <ClInclude Include="Add.cuh">
       <Filter>Kernels</Filter>
     </ClInclude>
+    <ClInclude Include="sum2d.cuh">
+      <Filter>Kernels</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\watLogo.jpg">
+      <Filter>Resources</Filter>
+    </Image>
   </ItemGroup>
 </Project>

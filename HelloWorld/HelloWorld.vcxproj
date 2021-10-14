@@ -91,13 +91,19 @@
     <CudaCompile Include="Program.cu">
       <FileType>Document</FileType>
     </CudaCompile>
+    <CudaCompile Include="sum2d.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Add.cuh" />
     <ClInclude Include="CudaException.cuh" />
     <ClInclude Include="Globals.cuh" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="Sum.cuh" />
+    <ClInclude Include="sum2d.cuh" />
     <ClInclude Include="Utilities.cuh" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\watLogo.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
