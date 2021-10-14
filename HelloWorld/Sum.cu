@@ -8,7 +8,6 @@ __global__ void sum(int* input, int* output, int workSize) {
 	int localIndex = threadIdx.x + blurRadius;
 	
 	if (globalIndex < workSize) {
-		
 		auto loadToShared = [&] {
 			auto actual = [&] {
 				shared[localIndex] = input[globalIndex];
@@ -37,5 +36,4 @@ __global__ void sum(int* input, int* output, int workSize) {
 		loadToShared();
 		output[globalIndex] = sumNeighbouringValues();
 	}
-	
 }
