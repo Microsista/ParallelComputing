@@ -1,8 +1,6 @@
 #include "Globals.cuh"
 #include "Utilities.cuh"
 #include "Sum.cuh"
-#include "Add.cuh"
-#include "Sum2d.cuh"
 
 #include <cuda_runtime.h>
 
@@ -30,28 +28,15 @@ int main() {
 		}
 		printf("Loaded image with a width of %dpx, a height of %dpx and %d channels\n", width, height, channels);
 
-		struct int3 {
-			int x, y, z;
-			int3(int x, int y, int z) : x{ x }, y{ y }, z{ z } {}
-		};
-
-		std::vector<int> input;
-		for (auto i = 0; i < width; i++) {
-			for (auto j = 0; j < height; j++) {
-				const stbi_uc* p = img + (3 * (j * width + i));
-				input.push_back(p[0]);
-				input.push_back(p[1]);
-				input.push_back(p[2]);
-			}
-		}
-
-		vector<int> output(input.size());
+	
 
 		void* inputOnDevice;
 		void* outputOnDevice;
 
-		auto inputSizeInBytes = input.size() * sizeof(input[0]);
-		auto numberOfGroups = (input.size() + numberOfThreads - 1) / numberOfThreads;
+		auto inputSizeInBytes = width * height * channels;
+		auto numberOfGroups = (inputSizeInBytes + numberOfThreads - 1) / numberOfThreads;
+
+		unsigned char* output = new unsigned char[inputSizeInBytes];
 
 		auto allocateInputAndOutputOnDevice = [&] {
 			ThrowIfFailed(cudaMalloc(&inputOnDevice, inputSizeInBytes));
@@ -59,16 +44,16 @@ int main() {
 		};
 
 		auto copyInputToDevice = [&] {
-			ThrowIfFailed(cudaMemcpy(inputOnDevice, input.data(), inputSizeInBytes, cudaMemcpyHostToDevice));
+			ThrowIfFailed(cudaMemcpy(inputOnDevice, img, inputSizeInBytes, cudaMemcpyHostToDevice));
 		};
 
 		auto executeSumKernel = [&] {
-			sum<<<numberOfGroups, numberOfThreads>>>(reinterpret_cast<int*>(inputOnDevice), reinterpret_cast<int*>(outputOnDevice), input.size());
+			sum<<<numberOfGroups, numberOfThreads>>>(reinterpret_cast<unsigned char*>(inputOnDevice), reinterpret_cast<unsigned char*>(outputOnDevice), inputSizeInBytes, width);
 			ThrowIfFailed(cudaGetLastError());
 		};
 
 		auto copyAndShowOutputFromDevice = [&] {
-			ThrowIfFailed(cudaMemcpy(output.data(), outputOnDevice, inputSizeInBytes, cudaMemcpyDeviceToHost));
+			ThrowIfFailed(cudaMemcpy(output, outputOnDevice, inputSizeInBytes, cudaMemcpyDeviceToHost));
 		};
 
 		auto freeBuffersOnDevice = [&] {
@@ -80,9 +65,10 @@ int main() {
 		copyInputToDevice();
 		executeSumKernel();
 		copyAndShowOutputFromDevice();
-		stbi_write_jpg("output.jpg", width, height, 3, output.data(), 100);
+		stbi_write_jpg("output.jpg", width, height, 3, output, 100);
 
 		freeBuffersOnDevice();
+		delete output;
 	}
 	catch (exception& e){
 		cerr << e.what();

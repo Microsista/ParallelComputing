@@ -1,3 +1,6 @@
+#ifndef UTILITIES_H
+#define UTILITIES_H
+
 #include "CudaException.cuh"
 
 #include <cuda_runtime.h>
@@ -21,3 +24,10 @@ void print(const int* array, int size) {
 		std::cout << array[i] << " ";
 	std::cout << "\n";
 }
+
+//struct int3 {
+//	int x, y, z;
+//	int3(int x, int y, int z) : x{ x }, y{ y }, z{ z } {}
+//};
+
+#endif

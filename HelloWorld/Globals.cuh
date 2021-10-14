@@ -1,2 +1,2 @@
 const auto blurRadius = 2;
-const auto numberOfThreads = 3;
+const auto numberOfThreads = 32;

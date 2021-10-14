@@ -5,12 +5,6 @@
     <CudaCompile Include="Sum.cu">
       <Filter>Kernels</Filter>
     </CudaCompile>
-    <CudaCompile Include="Add.cu">
-      <Filter>Kernels</Filter>
-    </CudaCompile>
-    <CudaCompile Include="sum2d.cu">
-      <Filter>Kernels</Filter>
-    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -39,18 +33,15 @@
     <ClInclude Include="Globals.cuh">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Add.cuh">
-      <Filter>Kernels</Filter>
-    </ClInclude>
-    <ClInclude Include="sum2d.cuh">
-      <Filter>Kernels</Filter>
-    </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\watLogo.jpg">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\ptak.jpg">
       <Filter>Resources</Filter>
     </Image>
   </ItemGroup>
