@@ -34,13 +34,13 @@ struct Uchar3 {
 	unsigned char x, y,  z;
 	Uchar3(){}
 	Uchar3(unsigned char x, unsigned char y, unsigned char z) : x{x}, y{y}, z{z} {}
-	Uchar3 operator*(const Uchar3& rhs) {
+	Uchar3 operator*(Uchar3& rhs) {
 		return Uchar3(this->x * rhs.x, this->y * rhs.y, this->z * rhs.z);
 	}
 	Uchar3 operator*(float rhs) {
 		return Uchar3(this->x * rhs, this->y * rhs, this->z * rhs);
 	}
-	Uchar3 operator+(const Uchar3& rhs) {
+	Uchar3 operator+(Uchar3& rhs) {
 		return Uchar3(this->x + rhs.x, this->y + rhs.y, this->z + rhs.z);
 	}
 };

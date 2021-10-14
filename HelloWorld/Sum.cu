@@ -11,18 +11,19 @@ __global__ void sum(Uchar3* input, Uchar3* output, int workSize, int width) {
 		unsigned char x, y, z;
 		Uchar3() {}
 		Uchar3(unsigned char x, unsigned char y, unsigned char z) : x{ x }, y{ y }, z{ z } {}
-		Uchar3 operator*(const Uchar3& rhs) {
-			return Uchar3(this->x * rhs.x, this->y * rhs.y, this->z * rhs.z);
+
+		static Uchar3 mul(Uchar3 lhs, Uchar3 rhs) {
+			return Uchar3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
 		}
-		Uchar3 operator*(float rhs) {
-			return Uchar3(this->x * rhs, this->y * rhs, this->z * rhs);
+		static Uchar3 mul(Uchar3 lhs, float rhs) {
+			return Uchar3(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs);
 		}
-		Uchar3 operator+(const Uchar3& rhs) {
-			return Uchar3(this->x + rhs.x, this->y + rhs.y, this->z + rhs.z);
+		static Uchar3 add(Uchar3 lhs, Uchar3 rhs) {
+			return Uchar3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
 		}
 	};
 
-	int globalIndex = threadIdx.x + blockIdx.x * blockDim.x;
+	int globalIndex = (threadIdx.x + blockIdx.x * blockDim.x) / 3;
 	int globalX = globalIndex % width;
 	int globalY = globalIndex / width;
 
@@ -46,9 +47,9 @@ __global__ void sum(Uchar3* input, Uchar3* output, int workSize, int width) {
 			if (globalIndex / width + i > workSize/width)
 				y = 0;
 
-			result = result + *input[globalX + x + (width * (globalY + y))] * weights[j + blurRadius] * weights[i + blurRadius];
+			result = Uchar3::mul(Uchar3::add(result, input[globalX + x + (width * (globalY + y))]), weights[j + blurRadius] * weights[i + blurRadius]);
 		}
 	}
 
-	*output[globalIndex] = result;
+	output[globalIndex] = result;
 }
