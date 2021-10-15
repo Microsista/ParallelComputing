@@ -15,6 +15,7 @@
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+#include <chrono>
 
 using namespace std;
 
@@ -86,9 +87,11 @@ int main() {
 		const dim3 blockSize(16, 16, 1);
 		const dim3 gridSize{ numCols / blockSize.x + 1, numRows / blockSize.y + 1, 1 };
 
+		auto t1 = chrono::high_resolution_clock::now();
 		separateChannels<<<gridSize, blockSize>>>(d_inputImageRGB, numRows, numCols, d_red, d_green, d_blue);
 		cudaDeviceSynchronize(); ThrowIfFailed(cudaGetLastError());
 
+		
 		sum<<<gridSize, blockSize>>>(d_red, d_redBlurred, numRows, numCols, blurRadius);
 		sum<<<gridSize, blockSize>>>(d_green, d_greenBlurred, numRows, numCols, blurRadius);
 		sum<<<gridSize, blockSize>>>(d_blue, d_blueBlurred, numRows, numCols, blurRadius);
@@ -96,7 +99,9 @@ int main() {
 
 		recombineChannels<<<gridSize, blockSize>>>(d_redBlurred, d_greenBlurred, d_blueBlurred, d_outputImageRGB, numRows, numCols);
 		cudaDeviceSynchronize(); ThrowIfFailed(cudaGetLastError());
+		auto t2 = chrono::high_resolution_clock::now();
 
+		cout << chrono::duration_cast<chrono::milliseconds>(t2 - t1).count() << "\n";
 
 		copyOutputFromDevice();
 		stbi_write_jpg("output.jpg", numCols, numRows, 3, output, 100);
