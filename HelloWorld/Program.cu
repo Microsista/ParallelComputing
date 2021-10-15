@@ -1,6 +1,7 @@
-#include "Globals.cuh"
 #include "Utilities.cuh"
 #include "Sum.cuh"
+#include "SeparateChannels.cuh"
+#include "RecombineChannels.cuh"
 
 #include <cuda_runtime.h>
 
@@ -20,51 +21,85 @@ using namespace std;
 
 int main() {
 	try {
-		int width, height, channels;
-		unsigned char* img = stbi_load("assets\\ptak.jpg", &width, &height, &channels, 3);
+		int blurRadius = 2;
+		int numCols, numRows, channels;
+		unsigned char* img = stbi_load("assets\\ptak.jpg", &numCols, &numRows, &channels, 3);
 		if (img == NULL) {
 			printf("error loading the image\n");
 			exit(1);
 		}
-		printf("Loaded image with a width of %dpx, a height of %dpx and %d channels\n", width, height, channels);
-	
+		printf("Loaded image with a width of %dpx, a height of %dpx and %d channels\n", numCols, numRows, channels);
 
-		void* inputOnDevice;
-		void* outputOnDevice;
 
-		auto inputSizeInBytes = width * height * sizeof(Uchar3);
-		auto numberOfGroups = (inputSizeInBytes + numberOfThreads - 1) / numberOfThreads;
+		uchar3* d_inputImageRGB;
+		uchar3* d_outputImageRGB;
+
+		unsigned char* d_red;
+		unsigned char* d_green;
+		unsigned char* d_blue;
+
+		unsigned char* d_redBlurred;
+		unsigned char* d_greenBlurred;
+		unsigned char* d_blueBlurred;
+
+		auto inputSizeInBytes = numCols * numRows * sizeof(Uchar3);
 
 		Uchar3* output = new Uchar3[inputSizeInBytes];
 
 		auto allocateInputAndOutputOnDevice = [&] {
-			ThrowIfFailed(cudaMalloc(&inputOnDevice, inputSizeInBytes));
-			ThrowIfFailed(cudaMalloc(&outputOnDevice, inputSizeInBytes));
+			ThrowIfFailed(cudaMalloc(&d_inputImageRGB, inputSizeInBytes));
+			ThrowIfFailed(cudaMalloc(&d_outputImageRGB, inputSizeInBytes));
+
+			ThrowIfFailed(cudaMalloc(&d_red, inputSizeInBytes / 3));
+			ThrowIfFailed(cudaMalloc(&d_green, inputSizeInBytes / 3));
+			ThrowIfFailed(cudaMalloc(&d_blue, inputSizeInBytes / 3));
+
+			ThrowIfFailed(cudaMalloc(&d_redBlurred, inputSizeInBytes / 3));
+			ThrowIfFailed(cudaMalloc(&d_greenBlurred, inputSizeInBytes / 3));
+			ThrowIfFailed(cudaMalloc(&d_blueBlurred, inputSizeInBytes / 3));
 		};
 
 		auto copyInputToDevice = [&] {
-			ThrowIfFailed(cudaMemcpy(inputOnDevice, img, inputSizeInBytes, cudaMemcpyHostToDevice));
+			ThrowIfFailed(cudaMemcpy(d_inputImageRGB, img, inputSizeInBytes, cudaMemcpyHostToDevice));
 		};
 
-		auto executeSumKernel = [&] {
-			sum<<<numberOfGroups, numberOfThreads>>>(reinterpret_cast<unsigned char*>(inputOnDevice), reinterpret_cast<unsigned char*>(outputOnDevice), inputSizeInBytes, width);
-			ThrowIfFailed(cudaGetLastError());
-		};
-
-		auto copyAndShowOutputFromDevice = [&] {
-			ThrowIfFailed(cudaMemcpy(output, outputOnDevice, inputSizeInBytes, cudaMemcpyDeviceToHost));
+		auto copyOutputFromDevice = [&] {
+			ThrowIfFailed(cudaMemcpy(output, d_outputImageRGB, inputSizeInBytes, cudaMemcpyDeviceToHost));
 		};
 
 		auto freeBuffersOnDevice = [&] {
-			ThrowIfFailed(cudaFree(inputOnDevice));
-			ThrowIfFailed(cudaFree(outputOnDevice));
+			ThrowIfFailed(cudaFree(d_inputImageRGB));
+			ThrowIfFailed(cudaFree(d_outputImageRGB));
+
+			ThrowIfFailed(cudaFree(d_red));
+			ThrowIfFailed(cudaFree(d_green));
+			ThrowIfFailed(cudaFree(d_blue));
+
+			ThrowIfFailed(cudaFree(d_redBlurred));
+			ThrowIfFailed(cudaFree(d_greenBlurred));
+			ThrowIfFailed(cudaFree(d_blueBlurred));
 		};
 
 		allocateInputAndOutputOnDevice();
 		copyInputToDevice();
-		executeSumKernel();
-		copyAndShowOutputFromDevice();
-		stbi_write_jpg("output.jpg", width, height, 3, output, 100);
+
+		const dim3 blockSize(16, 16, 1);
+		const dim3 gridSize{ numCols / blockSize.x + 1, numRows / blockSize.y + 1, 1 };
+
+		separateChannels<<<gridSize, blockSize>>>(d_inputImageRGB, numRows, numCols, d_red, d_green, d_blue);
+		cudaDeviceSynchronize(); ThrowIfFailed(cudaGetLastError());
+
+		/*sum<<<numberOfGroups, numberOfThreads>>>(d_red, d_redBlurred, numRows, numCols, blurRadius);
+		sum<<<numberOfGroups, numberOfThreads>>>(d_green, d_greenBlurred, numRows, numCols, blurRadius);
+		sum<<<numberOfGroups, numberOfThreads>>>(d_blue, d_blueBlurred, numRows, numCols, blurRadius);
+		cudaDeviceSynchronize(); ThrowIfFailed(cudaGetLastError());*/
+
+		recombineChannels<<<gridSize, blockSize>>>(d_redBlurred, d_greenBlurred, d_blueBlurred, d_outputImageRGB, numRows, numCols);
+		cudaDeviceSynchronize(); ThrowIfFailed(cudaGetLastError());
+
+
+		copyOutputFromDevice();
+		stbi_write_jpg("output.jpg", numCols, numRows, 3, output, 100);
 
 		freeBuffersOnDevice();
 		delete output;

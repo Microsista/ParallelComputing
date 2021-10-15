@@ -5,6 +5,12 @@
     <CudaCompile Include="Sum.cu">
       <Filter>Kernels</Filter>
     </CudaCompile>
+    <CudaCompile Include="SeparateChannels.cu">
+      <Filter>Kernels</Filter>
+    </CudaCompile>
+    <CudaCompile Include="RecombineChannels.cu">
+      <Filter>Kernels</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -30,11 +36,14 @@
     <ClInclude Include="Sum.cuh">
       <Filter>Kernels</Filter>
     </ClInclude>
-    <ClInclude Include="Globals.cuh">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SeparateChannels.cuh">
+      <Filter>Kernels</Filter>
+    </ClInclude>
+    <ClInclude Include="RecombineChannels.cuh">
+      <Filter>Kernels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

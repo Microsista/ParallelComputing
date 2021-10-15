@@ -86,6 +86,8 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="RecombineChannels.cu" />
+    <CudaCompile Include="SeparateChannels.cu" />
     <CudaCompile Include="Sum.cu" />
     <CudaCompile Include="Program.cu">
       <FileType>Document</FileType>
@@ -93,7 +95,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CudaException.cuh" />
-    <ClInclude Include="Globals.cuh" />
+    <ClInclude Include="RecombineChannels.cuh" />
+    <ClInclude Include="SeparateChannels.cuh" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Sum.cuh" />
     <ClInclude Include="Utilities.cuh" />
