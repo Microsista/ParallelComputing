@@ -21,7 +21,7 @@ using namespace std;
 
 int main() {
 	try {
-		int blurRadius = 2;
+		int blurRadius = 7;
 		int numCols, numRows, channels;
 		unsigned char* img = stbi_load("assets\\ptak.jpg", &numCols, &numRows, &channels, 3);
 		if (img == NULL) {
@@ -89,10 +89,10 @@ int main() {
 		separateChannels<<<gridSize, blockSize>>>(d_inputImageRGB, numRows, numCols, d_red, d_green, d_blue);
 		cudaDeviceSynchronize(); ThrowIfFailed(cudaGetLastError());
 
-		/*sum<<<numberOfGroups, numberOfThreads>>>(d_red, d_redBlurred, numRows, numCols, blurRadius);
-		sum<<<numberOfGroups, numberOfThreads>>>(d_green, d_greenBlurred, numRows, numCols, blurRadius);
-		sum<<<numberOfGroups, numberOfThreads>>>(d_blue, d_blueBlurred, numRows, numCols, blurRadius);
-		cudaDeviceSynchronize(); ThrowIfFailed(cudaGetLastError());*/
+		sum<<<gridSize, blockSize>>>(d_red, d_redBlurred, numRows, numCols, blurRadius);
+		sum<<<gridSize, blockSize>>>(d_green, d_greenBlurred, numRows, numCols, blurRadius);
+		sum<<<gridSize, blockSize>>>(d_blue, d_blueBlurred, numRows, numCols, blurRadius);
+		cudaDeviceSynchronize(); ThrowIfFailed(cudaGetLastError());
 
 		recombineChannels<<<gridSize, blockSize>>>(d_redBlurred, d_greenBlurred, d_blueBlurred, d_outputImageRGB, numRows, numCols);
 		cudaDeviceSynchronize(); ThrowIfFailed(cudaGetLastError());
