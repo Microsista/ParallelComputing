@@ -24,7 +24,7 @@ int main() {
 	try {
 		int blurRadius = 7;
 		int numCols, numRows, channels;
-		unsigned char* img = stbi_load("assets\\ptak.jpg", &numCols, &numRows, &channels, 3);
+		unsigned char* img = stbi_load("assets\\test.jpg", &numCols, &numRows, &channels, 3);
 		if (img == NULL) {
 			printf("error loading the image\n");
 			exit(1);

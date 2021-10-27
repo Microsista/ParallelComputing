@@ -32,10 +32,10 @@ __global__ void sum(unsigned char* d_color, unsigned char* d_colorBlurred, int n
 
 			int sample1DPos = sample2DPos.y * numCols + sample2DPos.x;
 			
-			color += d_color[sample1DPos];
+			color += weights[j + blurRadius] * weights[i + blurRadius] * d_color[sample1DPos];
 		}
 	}
-	color /= (2 * blurRadius + 1) * (2 * blurRadius + 1);
+	//color /= (2 * blurRadius + 1) * (2 * blurRadius + 1);
 
 
 	d_colorBlurred[thread_1D_pos] = (unsigned char)color;

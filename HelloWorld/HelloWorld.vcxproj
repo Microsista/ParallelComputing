@@ -103,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\ptak.jpg" />
+    <Image Include="assets\test.jpg" />
     <Image Include="assets\watLogo.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

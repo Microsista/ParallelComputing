@@ -53,5 +53,8 @@
     <Image Include="assets\ptak.jpg">
       <Filter>Resources</Filter>
     </Image>
+    <Image Include="assets\test.jpg">
+      <Filter>Resources</Filter>
+    </Image>
   </ItemGroup>
 </Project>
